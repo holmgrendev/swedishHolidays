@@ -1,4 +1,11 @@
 <?php
+/*
+*
+*** I don't take any responsibility if the dates are incorrect 
+* 
+*** Free to use and do whatever you want with it
+*
+*/
 
 function swedishHolidays($format=false, $calStart=false, $calEnd=false){
     /*
@@ -45,6 +52,15 @@ function swedishHolidays($format=false, $calStart=false, $calEnd=false){
 
         //* Add static dates to calendar
         foreach($calStatic as $key => $value){
+
+            if($value == "Första Maj" && $i < 1939){
+                continue;
+            }
+
+            if($value == "Sveriges nationaldag" && $i < 2005){
+                continue;
+            }
+
             $cal[$i][$i.$key] = $value;
         }
 
@@ -106,19 +122,38 @@ function swedishHolidays($format=false, $calStart=false, $calEnd=false){
         ********** Calculate Month and day for All Saints-related dates **********
         */
 
-        for($k=30; $k<=36; $k++){
-            
-            $asMonth = 10;
-            $asDay = $k;
-            
-            if($k > 31){
-                $asMonth = 11;
-                $asDay = sprintf('%02d', ($k-31));
+        if($i >= 1953){
+
+            for($k=30; $k<=36; $k++){
+                
+                $asMonth = 10;
+                $asDay = $k;
+                
+                if($k > 31){
+                    $asMonth = 11;
+                    $asDay = sprintf('%02d', ($k-31));
+                }
+    
+                if(date("N", strtotime($i.$asMonth.$asDay)) == 5){
+                    break;
+                }
             }
 
-            if(date("N", strtotime($i.$asMonth.$asDay)) == 5){
-                break;
+        }elseif($i >= 1772){
+            
+            $asMonth = 11;
+
+            for($l=1;$l<=7;$l++){
+                if(date("N", strtotime($i.$asMonth."0".$l."-1 days")) == 6){
+                    $asDay = date("d", strtotime($i.$asMonth."0".$l."-1 days"));
+                    $asMonth = date("m", strtotime($i.$asMonth."0".$l."-1 days"));
+                    break;
+                }
             }
+
+        }else{
+            $asMonth = 10;
+            $asDay = 31;
         }
         
         $cal[$i][$i.$asMonth.$asDay] = "Allhelgonaafton";
